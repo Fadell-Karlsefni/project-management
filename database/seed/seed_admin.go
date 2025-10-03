@@ -6,6 +6,7 @@ import (
 	"github.com/Fadell-Karlsefni/project-management/config"
 	"github.com/Fadell-Karlsefni/project-management/models"
 	"github.com/Fadell-Karlsefni/project-management/utils"
+	"github.com/google/uuid"
 )
 
 func SeedAdmin() {
@@ -15,6 +16,7 @@ func SeedAdmin() {
 		Email:    "Admin@example.com",
 		Password: password,
 		Role:     "admin",
+		PublicID: uuid.New(),
 	}
 	if err := config.DB.FirstOrCreate(&admin, models.User{Email: admin.Email}).Error; err != nil {
 		log.Println("Failed to seed admin : ", err)
