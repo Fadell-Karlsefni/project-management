@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"strings"
+
 	"github.com/Fadell-Karlsefni/project-management/config"
 	"github.com/Fadell-Karlsefni/project-management/models"
 )
@@ -10,7 +12,6 @@ type UserRepositroy interface {
 	FindByEmail(email string) (*models.User, error)
 	FindByID(id uint) (*models.User, error)
 	FindPublicID(publicID string) (*models.User, error)
-
 }
 
 type userRepositroy struct{}
@@ -39,4 +40,45 @@ func (r *userRepositroy) FindPublicID(publicID string) (*models.User, error) {
 	var user models.User
 	err := config.DB.Where("public_id = ?", publicID).First(&user).Error
 	return &user, err
+}
+
+func (r *userRepositroy) FindAllPagination(filter, sort string, limit, ofset int) ([]models.User, int64, error) {
+	var users []models.User
+	var total int64
+
+	db := config.DB.Model(&models.User{})
+
+	// filltering
+	if filter != "" {
+		filterPattern := "%" + filter + "%"
+		db = db.Where("name Ilike ? OR email Ilike ?", filterPattern, filterPattern)
+	}
+
+	// count data
+	if err := db.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+
+	// sorting
+	if sort != "" {
+		switch sort {
+		case "-id":
+			sort = "-internal_id"
+		case "id":
+			sort = "internal_id"
+		}
+
+		if strings.HasPrefix(sort, "-") {
+			sort = strings.TrimPrefix(sort, "-") + " DESC"
+		} else {
+			sort += " ASC"
+		}
+
+		db = db.Order(sort)
+	}
+
+	// pagination
+	err := db.Limit(limit).Offset(ofset).Find(&users).Error
+	return users, total, err
+
 }
