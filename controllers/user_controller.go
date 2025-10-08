@@ -1,7 +1,8 @@
 package controllers
 
 import (
-	
+	"math"
+	"strconv"
 
 	"github.com/Fadell-Karlsefni/project-management/models"
 	"github.com/Fadell-Karlsefni/project-management/services"
@@ -71,4 +72,36 @@ func (c *UserController) GetUser(ctx *fiber.Ctx) error {
 		return utils.BadRequest(ctx,"Internal Server Error",err.Error())
 	}
 	return utils.Success(ctx,"Data Berhasil Di temmukan",userResp)
+}
+
+func (c *UserController) GetUserPagination(ctx *fiber.Ctx) error {
+	page, _ := strconv.Atoi(ctx.Query("page","1"))
+	limit, _ := strconv.Atoi(ctx.Query("limit","10"))
+	offset := (page - 1) * limit
+
+	filter := ctx.Query("filter","")
+	sort := ctx.Query("sort","")
+
+	users,total,err := c.service.GetAllPagination(filter,sort,limit,offset)
+	if err != nil {
+		return utils.BadRequest(ctx,"Gagal Mengambil Data",err.Error())
+	}
+
+	var userResp []models.UserResponse
+	_ = copier.Copy(&userResp,&users)
+
+	meta := utils.PaginationMeta{
+		Page: page,
+		Limit: limit,
+		Total: int(total),
+		TotalPage: int(math.Ceil(float64(total)/float64(limit))),
+		Filter: filter,
+		Sort: sort,
+	}
+
+	if total == 0 {
+		return utils.NotFoundPagination(ctx,"Data Pengguna Tidak Ditemukan",userResp,meta)
+	}
+	return utils.SuccessPagination(ctx,"Data Ditemukan",userResp,meta)
+	
 }

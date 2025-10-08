@@ -10,12 +10,50 @@ type Response struct {
 	Error        string      `json:"error,omitempty"`
 }
 
+type ResponsePagination struct {
+	Status       string         `json:"status"`
+	ResponseCode int            `json:"response_code"`
+	Messege      string         `json:"messege,omitempty"`
+	Data         interface{}    `json:"data,omitempty"`
+	Error        string         `json:"error,omitempty"`
+	Meta         PaginationMeta `json:"meta"`
+}
+
+type PaginationMeta struct {
+	Page      int    `json:"page" example:"1"`
+	Limit     int    `json:"limit" example:"10"`
+	Total     int    `json:"total" example:"100"`
+	TotalPage int    `json:"total_pages" example:"10"`
+	Filter    string `json:"filter" example:"nama=fadil"`
+	Sort      string `json:"sort" example:"-id"`
+}
+
 func Success(c *fiber.Ctx, messege string, data interface{}) error {
 	return c.Status(fiber.StatusOK).JSON(Response{
 		Status:       "Success",
 		ResponseCode: fiber.StatusOK,
 		Messege:      messege,
 		Data:         data,
+	})
+}
+
+func SuccessPagination(c *fiber.Ctx, messege string, data interface{}, meta PaginationMeta) error {
+	return c.Status(fiber.StatusOK).JSON(ResponsePagination{
+		Status:       "Success",
+		ResponseCode: fiber.StatusOK,
+		Messege:      messege,
+		Data:         data,
+		Meta:         meta,
+	})
+}
+
+func NotFoundPagination(c *fiber.Ctx, messege string, data interface{}, meta PaginationMeta) error {
+	return c.Status(fiber.StatusNotFound).JSON(ResponsePagination{
+		Status:       "Not Found",
+		ResponseCode: fiber.StatusOK,
+		Messege:      messege,
+		Data:         data,
+		Meta:         meta,
 	})
 }
 
@@ -33,7 +71,7 @@ func BadRequest(c *fiber.Ctx, messege string, err string) error {
 		Status:       "Error Bad Request",
 		ResponseCode: fiber.StatusBadRequest,
 		Messege:      messege,
-		Error: err,
+		Error:        err,
 	})
 }
 
@@ -42,7 +80,7 @@ func NotFound(c *fiber.Ctx, messege string, err string) error {
 		Status:       "Error Not Found",
 		ResponseCode: fiber.StatusNotFound,
 		Messege:      messege,
-		Error: err,
+		Error:        err,
 	})
 }
 
@@ -51,6 +89,6 @@ func Unauthorized(c *fiber.Ctx, messege string, err string) error {
 		Status:       "Error Unauthorized",
 		ResponseCode: fiber.StatusUnauthorized,
 		Messege:      messege,
-		Error: err,
+		Error:        err,
 	})
 }
