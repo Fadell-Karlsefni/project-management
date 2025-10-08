@@ -12,6 +12,7 @@ type UserRepositroy interface {
 	FindByEmail(email string) (*models.User, error)
 	FindByID(id uint) (*models.User, error)
 	FindPublicID(publicID string) (*models.User, error)
+	FindAllPagination(filter, sort string, limit, offset int) ([]models.User, int64, error)
 }
 
 type userRepositroy struct{}
@@ -42,7 +43,7 @@ func (r *userRepositroy) FindPublicID(publicID string) (*models.User, error) {
 	return &user, err
 }
 
-func (r *userRepositroy) FindAllPagination(filter, sort string, limit, ofset int) ([]models.User, int64, error) {
+func (r *userRepositroy) FindAllPagination(filter, sort string, limit, offset int) ([]models.User, int64, error) {
 	var users []models.User
 	var total int64
 
@@ -78,7 +79,7 @@ func (r *userRepositroy) FindAllPagination(filter, sort string, limit, ofset int
 	}
 
 	// pagination
-	err := db.Limit(limit).Offset(ofset).Find(&users).Error
+	err := db.Limit(limit).Offset(offset).Find(&users).Error
 	return users, total, err
 
 }
