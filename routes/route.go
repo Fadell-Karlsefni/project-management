@@ -31,5 +31,6 @@ func Setup(app *fiber.App, uc *controllers.UserController) {
 	userGroup := api.Group("/users")
 	userGroup.Get("/page", uc.GetUserPagination)
 	userGroup.Get("/:id", uc.GetUser)
+	userGroup.Put("/:id", uc.UpdateUser)
 	
 }
