@@ -139,3 +139,12 @@ func (c *UserController) UpdateUser(ctx *fiber.Ctx) error {
 
 	return utils.Success(ctx,"Berhasil Update Data",userResp)
 }
+
+func (c *UserController) DeleteUser(ctx *fiber.Ctx) error {
+	ctx.Params("id")
+	id,_ := strconv.Atoi(ctx.Params("id"))
+	if err := c.service.Delete(uint(id)); err != nil {
+		return utils.InternalServerError(ctx,"Gagal Menghapus Data",err.Error())
+	}
+	return utils.Success(ctx,"Berhasil Menghapus Data",id)
+}

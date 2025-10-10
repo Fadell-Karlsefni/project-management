@@ -14,6 +14,7 @@ type UserRepositroy interface {
 	FindPublicID(publicID string) (*models.User, error)
 	FindAllPagination(filter, sort string, limit, offset int) ([]models.User, int64, error)
 	Update(user *models.User) error
+	Delete(id uint) error
 }
 
 type userRepositroy struct{}
@@ -89,4 +90,8 @@ func (r *userRepositroy) Update(user *models.User) error {
 	return config.DB.Model(&models.User{}).Where("public_id = ?",user.PublicID).Updates(map[string]interface{}{
 		"name": user.Name,
 	}).Error
+}
+
+func (r *userRepositroy) Delete(id uint) error {
+	return config.DB.Delete(&models.User{},id).Error
 }
