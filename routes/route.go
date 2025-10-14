@@ -37,4 +37,5 @@ func Setup(app *fiber.App,
 	
 	boardGrup := api.Group("/boards")
 	boardGrup.Post("/", bc.CreateBoard)
+	boardGrup.Put("/:id", bc.UpdateBoard)
 }

@@ -41,7 +41,7 @@ func (c *BoardController) CreateBoard(ctx *fiber.Ctx) error {
 	return utils.Success(ctx,"Board Berhasil Di buat",board)
 }
 
-func (c *BoardController) Update(ctx *fiber.Ctx) error {
+func (c *BoardController) UpdateBoard(ctx *fiber.Ctx) error {
 	publicID := ctx.Params("id")
 	board := new(models.Board)
 
