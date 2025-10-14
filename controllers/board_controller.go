@@ -10,11 +10,11 @@ import (
 )
 
 type BoardController struct {
-	services services.BoardService
+	service services.BoardService
 }
 
 func NewBoardController(s services.BoardService) *BoardController {
-	return &BoardController{services: s}
+	return &BoardController{service: s}
 }
 
 func (c *BoardController) CreateBoard(ctx *fiber.Ctx) error {
@@ -35,8 +35,38 @@ func (c *BoardController) CreateBoard(ctx *fiber.Ctx) error {
 	}
 	board.OwnerPublicID = userID
 
-	if err := c.services.Create(board); err != nil {
+	if err := c.service.Create(board); err != nil {
 		return utils.BadRequest(ctx,"Gagal Menyimpan Data",err.Error())
 	}
 	return utils.Success(ctx,"Board Berhasil Di buat",board)
+}
+
+func (c *BoardController) Update(ctx *fiber.Ctx) error {
+	publicID := ctx.Params("id")
+	board := new(models.Board)
+
+	if err := ctx.BodyParser(board); err != nil {
+		return utils.BadRequest(ctx,"Gagal Parsing Data",err.Error())
+	}
+
+	if _,err := uuid.Parse(publicID); err != nil {
+		return utils.BadRequest(ctx,"ID Tidak Valid",err.Error())
+	}
+
+	existingBoard, err := c.service.GetByPublicID(publicID)
+	if err != nil {
+		return utils.NotFound(ctx,"Board Tidak DiTemukan",err.Error())
+	}
+	board.InternalID = existingBoard.InternalID
+	board.PublicID = existingBoard.PublicID
+	board.OwnerID = existingBoard.OwnerID
+	board.OwnerPublicID = existingBoard.OwnerPublicID
+	board.CreatedAt = existingBoard.CreatedAt
+
+
+	if err := c.service.Update(board);err != nil {
+		return utils.BadRequest(ctx,"Gagal Update Board",err.Error())
+	}
+
+	return  utils.Success(ctx,"Board Berhasil DiPerbarui",board)
 }
