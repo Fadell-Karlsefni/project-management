@@ -69,4 +69,5 @@ func (c *BoardController) UpdateBoard(ctx *fiber.Ctx) error {
 	}
 
 	return  utils.Success(ctx,"Board Berhasil DiPerbarui",board)
+	// 0dc6c520-8a39-4b81-a213-36a37f638834 id public board
 }
