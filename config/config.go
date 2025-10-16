@@ -81,4 +81,6 @@ func ConnectDB() {
 	sqlDB.SetConnMaxLifetime(time.Hour)
 
 	DB = db
+
+	// Perintah migrate : migrate -path ./database/migrations -database "postgres://postgres:karlsefni30092008@localhost:5432/project_management?sslmode=disable" up
 }
