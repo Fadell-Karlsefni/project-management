@@ -6,7 +6,7 @@ import (
 )
 
 type BoardMemberRepository interface {
-	GetMembers(boardPublicID string) ([]models.User,error )
+	GetMembers(boardPublicID string) ([]models.User,error)
 }
 
 type boardMemberRepository struct {
