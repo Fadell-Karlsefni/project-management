@@ -13,6 +13,7 @@ type BoardRepository interface {
 	FindByPublicID(publicID string) (*models.Board, error)
 	AddMember(boardID uint, userID []uint) error
 	RemoveMembers(boardID uint, userIDs []uint) error
+	FindAllByUserPaginate(userPublicID, filter, sort string, limit, offset int) ([]models.Board, int64, error)
 }
 
 type boardRepository struct {
