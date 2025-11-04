@@ -31,7 +31,7 @@ type ListService interface {
 	Create(list *models.List) error
 	Update(list *models.List) error
 	Delete(id uint) error
-	UpdatePositions(boardPublicID string, position []uuid.UUID) error 
+	UpdatePositions(boardPublicID string, positions []uuid.UUID) error 
 }
 
 func NewServiceList(listRepo repositories.ListRepository, boardRepo repositories.BoardRepository, listPosRepo repositories.ListPositionRepository) ListService {
@@ -137,13 +137,25 @@ func (s *listService) Create(list *models.List) error {
 	}
 
 func (s *listService) Update(list *models.List) error {
-	return nil
+	return s.listRepo.Update(list)
 }
 
 func (s *listService) Delete(id uint) error {
-	return nil
+	return s.listRepo.Delete(id)
 }
 
-func (s *listService) UpdatePositions(boardPublicID string, position []uuid.UUID) error {
-	return nil
+func (s *listService) UpdatePositions(boardPublicID string, positions []uuid.UUID) error {
+	// verifikasi board
+	board, err := s.boardRepo.FindByPublicID(boardPublicID)
+	if err != nil {
+		return errors.New("board not found")
+	}
+	// get list position
+	position, err := s.listPosRepo.GetByBoard(board.PublicID.String())
+	if err != nil {
+		return errors.New("list position not found")
+	}
+
+	position.ListOrder = positions	
+	return s.listPosRepo.UpdateListOrder(position)
 }
