@@ -57,3 +57,7 @@ func (c *ListController) UpdateList(ctx *fiber.Ctx) error {
 
 	return  utils.Success(ctx, "Berhasil Memperbarui List", updatedList)
 }
+
+func (c *ListController) GetListOnBoard(ctx *fiber.Ctx) error {
+	return nil
+}
