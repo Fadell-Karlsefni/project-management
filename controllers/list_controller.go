@@ -52,7 +52,7 @@ func (c *ListController) UpdateList(ctx *fiber.Ctx) error {
 
 	updatedList, err := c.services.GetByPublicID(publicID)
 	if err != nil {
-		return utils.NotFound(ctx, "List Tiadak Di temukan", err.Error())
+		return utils.NotFound(ctx, "List Tidak Di Temukan", err.Error())
 	}
 
 	return  utils.Success(ctx, "Berhasil Memperbarui List", updatedList)
